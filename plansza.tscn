@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtmch8v3ci8qy"]
+
+[ext_resource type="Script" path="res://plansza.gd" id="1_ilqk8"]
+
+[node name="Plansza" type="Node2D"]
+script = ExtResource("1_ilqk8")
