@@ -2,21 +2,26 @@ extends Node2D
 
 var plansza = []
 
+func pole(x:int,y:int):
+	#funkcja zwraca indeks tablicy 169-elementowej, odpowiadajacy indeksowi w tablicy dwuwymiarowej 13x13; gdy podane zostaną wartości spoza zakresu, zwraca false
+	if (x>=0)&&(x<=13)&&(y>=0)&&(y<=13): return y*13+x
+	else: return false
+
 func initPlansza(eo:Array):
 	eo.resize(13*13)
 	#dla uproszczenia metod sprawdzania zbijania etc, dodam jeszcze jeden rząd "pól" dookoła planszy, który będzie miał specjalną wartość -1
 	#startowo - domyślnie wszystkie elementy planszy mają wartość 0 - puste pole
-	for i in (13*13):
+	for i in (169):
 		eo[i]=0
 	#pola krawędzi mają wartość -1
 	for i in 13:
 		eo[i]=-1
-		eo[13*12+i]=-1
-		eo[i*13]=-1
-		eo[i*13+12]=-1
+		eo[pole(12,i)]=-1
+		eo[pole(0,i)]=-1
+		eo[pole(i,12)]=-1
 	#pola startowe czarnych mają wartość 1
 	for i in 5:
-		eo[17+i]=1
+		eo[pole(4+i,1)]=1
 		eo[13*11+4+i]=1
 		eo[13*(i+4)+1]=1
 		eo[13*(i+4)+11]=1
@@ -48,7 +53,7 @@ func pokazPlansze(_eo:Array):
 		for q in 13:
 			napis = napis + str(_eo[i*13+q]) + " "
 		print(napis)
-		
+
 func wolnePole(eo:Array, x:int,y:int):
 	if (eo[y*13+x]==0):
 		return 1
@@ -81,13 +86,35 @@ func czyRuchLegalny(eo:Array, x1:int,y1:int,x2:int,y2:int):
 					return false
 	else: return false
 	return true
-	
+
+#func zbijanie(eo:Array,x:int,y:int)
+	#if 
+
+func ruch(eo:Array, x1:int,y1:int,x2:int,y2:int):
+	if czyRuchLegalny(eo, x1,y1,x2,y2):
+		if eo[y1*13+x1]==8:
+			#ruch królem z tronu
+			eo[y1*13+x1]=4
+			eo[y2*13+x2]=3
+		elif (eo[y2*13+x2]==4):
+			#powrót królem na tron
+			eo[y1*13+x1]=0
+			eo[y2*13+x2]=7
+		else:
+			#każdy inny ruch - zakładam, że żadna bierka (poza królem) nie może startować ani kończyć na polu zastrzeżonym
+			eo[y2*13+x2]=eo[y1*13+x1]
+			eo[y1*13+x1]=0
+	else: return false
+	return true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	initPlansza(plansza)
 	pokazPlansze(plansza)
-	print(czyRuchLegalny(plansza,4,1,4,5))
+	ruch(plansza,4,6,4,8)
+	ruch(plansza,5,6,3,6)
+	ruch(plansza,6,6,4,6)
+	pokazPlansze(plansza)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
