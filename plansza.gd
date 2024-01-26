@@ -87,23 +87,116 @@ func czyRuchLegalny(eo:Array, x1:int,y1:int,x2:int,y2:int):
 	else: return false
 	return true
 
-#func zbijanie(eo:Array,x:int,y:int)
-	#if 
+#funckja sprawdza zbijanie na planszy (każdą możliwą metodą) dla bierki przestawionej w podane miejsce z podanego kierunku (strzalka) - wartość zwracana przez ruch()
+#białe 2, czarne 1, król 3, tron/rogi 4, król na tronie 7, krawędź -1;
+func zbijanie(eo:Array, x:int, y: int, strzalka:int):
+	var kierunek
+	#zbijanie przez "wzięcie w kleszcze" - klasyczne
+	for i in 4:
+		match i:
+			0:kierunek=-1
+			1:kierunek=1
+			2:kierunek=13
+			3:kierunek=-13
+		if eo[pole(x,y)+kierunek]>0:#sprawdzenie czy nie stoi przy krawędzi lub pustym
+			if eo[pole(x,y)]==1:#sprawdzenie koloru - jeżeli 1 to czarny, jeżeli coś innego to biały lub król w rozmaitych konfiguracjach
+				if(eo[pole(x,y)+kierunek]==2)&&((eo[pole(x,y)+kierunek*2]==1)||(eo[pole(x,y)+kierunek*2]==4)):
+					#powyższy warunek sprawdza, czy pole sąsiadujace jest zajęte przez białego piona, a następne przez czarnego lub tron/róg
+					eo[pole(x,y)+kierunek]==0
+			else:#jeżeli przesunięty był król lub biały pion
+				if(eo[pole(x,y)+kierunek]==1)&&(eo[pole(x,y)+kierunek*2]>1):
+					#powyższy warunek sprawdza, czy pole sąsiadujące jest czarne, a następne nie puste, nie jest krawędzią ani czarnym
+					eo[pole(x,y)+kierunek]==0
+	#zbijanie przez mur tarcz
+	kierunek=strzalka
+	if(eo[pole(x,y)+kierunek]==-1):
+		if eo[pole(x,y)]==1:#czarne
+			if abs(kierunek)==1:#sprawdzanie dla pionowych krawędzi
+				for i in range((y+1),12,1):#sprawdzanie w dół
+					if (eo[pole(x,i)]==2):
+						if(eo[pole(x,i)-kierunek]!=1):
+							break
+					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4)):
+						for q in range(y+1,i-1):
+							eo[pole(x,q)]=0
+						break
+				for i in range((y-1),0,-1):#sprawdzanie w górę
+					if (eo[pole(x,i)]==2):
+						if(eo[pole(x,i)-kierunek]!=1):
+							break
+					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4)):
+						for q in range(y-1,i+1,-1):
+							eo[pole(x,q)]=0
+						break
+			else:#sprawdzanie dla poziomych krawędzi
+				for i in range((x+1),12,1):#sprawdzanie w prawo
+					if (eo[pole(i,y)]==2):
+						if(eo[pole(i,y)-kierunek]!=1):
+							break
+					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4)):
+						for q in range(x+1,i-1):
+							eo[pole(q,y)]=0
+						break
+				for i in range((x-1),0,-1):#sprawdzanie w lewo
+					if (eo[pole(i,y)]==2):
+						if(eo[pole(i,y)-kierunek]!=1):
+							break
+					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4)):
+						for q in range(x-1,i+1,-1):
+							eo[pole(q,y)]=0
+						break
+		else:#białe i król
+			if abs(kierunek)==1:#sprawdzanie dla pionowych krawędzi
+				for i in range((y+1),12,1):#sprawdzanie w dół
+					if (eo[pole(x,i)]==1):
+						if(eo[pole(x,i)-kierunek]!=2)&&(eo[pole(x,i)-kierunek]!=3):
+							break
+					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4))||(eo[pole(x,i)-kierunek]==3):
+						for q in range(y+1,i-1):
+							eo[pole(x,q)]=0
+						break
+				for i in range((y-1),0,-1):#sprawdzanie w górę
+					if (eo[pole(x,i)]==1):
+						if(eo[pole(x,i)-kierunek]!=2)&&(eo[pole(x,i)-kierunek]!=3):
+							break
+					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4))||(eo[pole(x,i)-kierunek]==3):
+						for q in range(y-1,i+1,-1):
+							eo[pole(x,q)]=0
+						break
+			else:#sprawdzanie dla poziomych krawędzi
+				for i in range((x+1),12,1):#sprawdzanie w prawo
+					if (eo[pole(i,y)]==1):
+						if(eo[pole(i,y)-kierunek]!=2)&&(eo[pole(i,y)-kierunek]!=3):
+							break
+					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4))||(eo[pole(i,y)-kierunek]==3):
+						for q in range(x+1,i-1):
+							eo[pole(q,y)]=0
+						break
+				for i in range((x-1),0,-1):#sprawdzanie w lewo
+					if (eo[pole(i,y)]==1):
+						if(eo[pole(i,y)-kierunek]!=2)&&(eo[pole(i,y)-kierunek]!=3):
+							break
+					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4))||(eo[pole(i,y)-kierunek]==3):
+						for q in range(x-1,i+1,-1):
+							eo[pole(q,y)]=0
+						break
 
+#funkcja ruch zwraca kierunek w jakim przemieściła się bierka: GÓRA - -13, DÓŁ - 13, PRAWO - 1, LEWO - -1, lub 0 gdy ruch był nielegalny
 func ruch(eo:Array, x1:int,y1:int,x2:int,y2:int):
 	if czyRuchLegalny(eo, x1,y1,x2,y2):
-		if eo[y1*13+x1]==8:
+		if eo[pole(x1,y1)]==8:
 			#ruch królem z tronu
-			eo[y1*13+x1]=4
-			eo[y2*13+x2]=3
-		elif (eo[y2*13+x2]==4):
+			eo[pole(x1,y1)]=4
+			eo[pole(x2,y2)]=3
+		elif (eo[pole(x2,y2)]==4):
 			#powrót królem na tron
-			eo[y1*13+x1]=0
-			eo[y2*13+x2]=7
+			eo[pole(x1,y1)]=0
+			eo[pole(x2,y2)]=7
 		else:
 			#każdy inny ruch - zakładam, że żadna bierka (poza królem) nie może startować ani kończyć na polu zastrzeżonym
-			eo[y2*13+x2]=eo[y1*13+x1]
-			eo[y1*13+x1]=0
+			eo[pole(x2,y2)]=eo[pole(x1,y1)]
+			eo[pole(x1,y1)]=0
+		zbijanie(eo,x2,y2,x2-x1+(y2-y1)*13);
 	else: return false
 	return true
 
@@ -115,6 +208,7 @@ func _ready():
 	ruch(plansza,5,6,3,6)
 	ruch(plansza,6,6,4,6)
 	pokazPlansze(plansza)
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
