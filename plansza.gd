@@ -40,11 +40,12 @@ func initPlansza(eo:Array):
 		eo[pole(5+i,5)]=2
 		eo[pole(5+i,7)]=2
 	#tron z królem ma wartość 7, potem sam król wartość 3, a tron i inne pola zastrzeżone 4
-	eo[pole(6,6)]=8
+	eo[pole(6,6)]=7
 	eo[pole(1,11)]=4
 	eo[pole(11,11)]=4
 	eo[pole(1,1)]=4
 	eo[pole(11,1)]=4
+	##poniżej miejsce na dodatkowe ustawienia do testów
 
 func pokazPlansze(_eo:Array):
 	var napis
@@ -65,26 +66,32 @@ func wolnePole(eo:Array, x:int,y:int):
 func czyRuchLegalny(eo:Array, x1:int,y1:int,x2:int,y2:int):
 	#funkcja ta sprawdza, czy jest legalny ruch z pola (x1,y1) na (x2,y2). Jeśli tak, zwraca TRUE, jeżeli nie, FALSE
 	#nie sprawdzam, czy wartości należą do zakresu od 1 do 11, bo zakładam, że tylko takie będą podawane
-	if (x1==x2):
-		if y1<y2:
+	if (x1==x2):#sprawdzenie dla ruchu w poziomie
+		if y1<y2:#sprawdzenie dla ruchu w prawo
 			for i in range(y2,y1,-1):
-				if (wolnePole(eo,x1,i)==0)||(wolnePole(eo,x1,i)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==8)):
-					return false
-		elif(y1>y2):
+				if (wolnePole(eo,x1,i)==0)||(wolnePole(eo,x1,i)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
+					print("OH1")
+					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
+		elif(y1>y2):#sprawdzenie dla ruchu w lewo
 			for i in range(y2,y1,1):
-				if (wolnePole(eo,x1,i)==0)||(wolnePole(eo,x1,i)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==8)):
-					return false
+				if (wolnePole(eo,x1,i)==0)||(wolnePole(eo,x1,i)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
+					print("OH2")
+					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
 		else: return false	
-	elif (y1==y2):
-		if x1<x2:
+	elif (y1==y2):#sprawdzenie dla ruchu w pionie
+		if x1<x2:#sprawdzenie dla ruchu w dół
 			for i in range(x2,x1,-1):
-				if (wolnePole(eo,i,y1)==0)||(wolnePole(eo,i,y1)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==8)):
-					return false
-		elif(x1>x2):
+				if (wolnePole(eo,i,y1)==0)||(wolnePole(eo,i,y1)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
+					print("OH3")
+					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
+		elif(x1>x2):#sprawdzenie dla ruchu w góre
 			for i in range(x2,x1,1):
-				if (wolnePole(eo,i,y1)==0)||(wolnePole(eo,i,y1)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==8)):
-					return false
-	else: return false
+				if (wolnePole(eo,i,y1)==0)||(wolnePole(eo,i,y1)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
+					print("OH4")
+					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
+	else: 
+		print("Błąd współrzędnych")
+		return false#zwraca fałsz, jeżeli x1!=x2 i y1!=y2, tzn jeżeli pola nie leżą w jednej kolumnie lub rzędzie
 	return true
 
 #funckja sprawdza zbijanie na planszy (każdą możliwą metodą) dla bierki przestawionej w podane miejsce z podanego kierunku (strzalka) - wartość zwracana przez ruch()
@@ -92,23 +99,20 @@ func czyRuchLegalny(eo:Array, x1:int,y1:int,x2:int,y2:int):
 func zbijanie(eo:Array, x:int, y: int, strzalka:int):
 	var kierunek
 	#zbijanie przez "wzięcie w kleszcze" - klasyczne
-	for i in 4:
-		match i:
-			0:kierunek=-1
-			1:kierunek=1
-			2:kierunek=13
-			3:kierunek=-13
+	for i in [1,-1,13,-13]:
+		kierunek=i
 		if eo[pole(x,y)+kierunek]>0:#sprawdzenie czy nie stoi przy krawędzi lub pustym
 			if eo[pole(x,y)]==1:#sprawdzenie koloru - jeżeli 1 to czarny, jeżeli coś innego to biały lub król w rozmaitych konfiguracjach
 				if(eo[pole(x,y)+kierunek]==2)&&((eo[pole(x,y)+kierunek*2]==1)||(eo[pole(x,y)+kierunek*2]==4)):
 					#powyższy warunek sprawdza, czy pole sąsiadujace jest zajęte przez białego piona, a następne przez czarnego lub tron/róg
-					eo[pole(x,y)+kierunek]==0
+					eo[pole(x,y)+kierunek]=0
 			else:#jeżeli przesunięty był król lub biały pion
 				if(eo[pole(x,y)+kierunek]==1)&&(eo[pole(x,y)+kierunek*2]>1):
 					#powyższy warunek sprawdza, czy pole sąsiadujące jest czarne, a następne nie puste, nie jest krawędzią ani czarnym
-					eo[pole(x,y)+kierunek]==0
+					eo[pole(x,y)+kierunek]=0
 	#zbijanie przez mur tarcz
 	kierunek=strzalka
+	print(kierunek)
 	if(eo[pole(x,y)+kierunek]==-1):
 		if eo[pole(x,y)]==1:#czarne
 			if abs(kierunek)==1:#sprawdzanie dla pionowych krawędzi
@@ -117,16 +121,20 @@ func zbijanie(eo:Array, x:int, y: int, strzalka:int):
 						if(eo[pole(x,i)-kierunek]!=1):
 							break
 					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4)):
-						for q in range(y+1,i-1):
+						for q in range(y+1,i):
 							eo[pole(x,q)]=0
+						break
+					else:
 						break
 				for i in range((y-1),0,-1):#sprawdzanie w górę
 					if (eo[pole(x,i)]==2):
 						if(eo[pole(x,i)-kierunek]!=1):
 							break
 					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4)):
-						for q in range(y-1,i+1,-1):
+						for q in range(y-1,i,-1):
 							eo[pole(x,q)]=0
+						break
+					else:
 						break
 			else:#sprawdzanie dla poziomych krawędzi
 				for i in range((x+1),12,1):#sprawdzanie w prawo
@@ -134,16 +142,20 @@ func zbijanie(eo:Array, x:int, y: int, strzalka:int):
 						if(eo[pole(i,y)-kierunek]!=1):
 							break
 					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4)):
-						for q in range(x+1,i-1):
+						for q in range(x+1,i):
 							eo[pole(q,y)]=0
+						break
+					else:
 						break
 				for i in range((x-1),0,-1):#sprawdzanie w lewo
 					if (eo[pole(i,y)]==2):
 						if(eo[pole(i,y)-kierunek]!=1):
 							break
 					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4)):
-						for q in range(x-1,i+1,-1):
+						for q in range(x-1,i,-1):
 							eo[pole(q,y)]=0
+						break
+					else:
 						break
 		else:#białe i król
 			if abs(kierunek)==1:#sprawdzanie dla pionowych krawędzi
@@ -152,16 +164,20 @@ func zbijanie(eo:Array, x:int, y: int, strzalka:int):
 						if(eo[pole(x,i)-kierunek]!=2)&&(eo[pole(x,i)-kierunek]!=3):
 							break
 					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4))||(eo[pole(x,i)-kierunek]==3):
-						for q in range(y+1,i-1):
+						for q in range(y+1,i):
 							eo[pole(x,q)]=0
+						break
+					else:
 						break
 				for i in range((y-1),0,-1):#sprawdzanie w górę
 					if (eo[pole(x,i)]==1):
 						if(eo[pole(x,i)-kierunek]!=2)&&(eo[pole(x,i)-kierunek]!=3):
 							break
-					elif((eo[pole(x,i)]==1)||(eo[pole(x,i)]==4))||(eo[pole(x,i)-kierunek]==3):
-						for q in range(y-1,i+1,-1):
+					elif((eo[pole(x,i)]==2)||(eo[pole(x,i)]==4))||(eo[pole(x,i)-kierunek]==3):
+						for q in range(y-1,i,-1):
 							eo[pole(x,q)]=0
+						break
+					else:
 						break
 			else:#sprawdzanie dla poziomych krawędzi
 				for i in range((x+1),12,1):#sprawdzanie w prawo
@@ -169,22 +185,26 @@ func zbijanie(eo:Array, x:int, y: int, strzalka:int):
 						if(eo[pole(i,y)-kierunek]!=2)&&(eo[pole(i,y)-kierunek]!=3):
 							break
 					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4))||(eo[pole(i,y)-kierunek]==3):
-						for q in range(x+1,i-1):
+						for q in range(x+1,i):
 							eo[pole(q,y)]=0
+						break
+					else:
 						break
 				for i in range((x-1),0,-1):#sprawdzanie w lewo
 					if (eo[pole(i,y)]==1):
 						if(eo[pole(i,y)-kierunek]!=2)&&(eo[pole(i,y)-kierunek]!=3):
 							break
 					elif((eo[pole(i,y)]==1)||(eo[pole(i,y)]==4))||(eo[pole(i,y)-kierunek]==3):
-						for q in range(x-1,i+1,-1):
+						for q in range(x-1,i,-1):
 							eo[pole(q,y)]=0
 						break
+					else:
+						break
 
-#funkcja ruch zwraca kierunek w jakim przemieściła się bierka: GÓRA - -13, DÓŁ - 13, PRAWO - 1, LEWO - -1, lub 0 gdy ruch był nielegalny
 func ruch(eo:Array, x1:int,y1:int,x2:int,y2:int):
+	var kierunek
 	if czyRuchLegalny(eo, x1,y1,x2,y2):
-		if eo[pole(x1,y1)]==8:
+		if eo[pole(x1,y1)]==7:
 			#ruch królem z tronu
 			eo[pole(x1,y1)]=4
 			eo[pole(x2,y2)]=3
@@ -196,7 +216,16 @@ func ruch(eo:Array, x1:int,y1:int,x2:int,y2:int):
 			#każdy inny ruch - zakładam, że żadna bierka (poza królem) nie może startować ani kończyć na polu zastrzeżonym
 			eo[pole(x2,y2)]=eo[pole(x1,y1)]
 			eo[pole(x1,y1)]=0
-		zbijanie(eo,x2,y2,x2-x1+(y2-y1)*13);
+		if x1!=x2:
+			if(x1>x2):
+				kierunek=-1
+			else:
+				kierunek=1
+		elif(y1>y2):
+			kierunek=-13
+		else:
+			kierunek=13
+		zbijanie(eo,x2,y2,kierunek);
 	else: return false
 	return true
 
@@ -207,6 +236,9 @@ func _ready():
 	ruch(plansza,4,6,4,8)
 	ruch(plansza,5,6,3,6)
 	ruch(plansza,6,6,4,6)
+	ruch(plansza,4,4,1,4)
+	plansza[pole(1,10)]=3
+	print(ruch(plansza,1,10,1,11))
 	pokazPlansze(plansza)
 
 
