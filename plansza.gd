@@ -52,8 +52,9 @@ func pokazPlansze(_eo:Array):
 	for i in 13:
 		napis = ""
 		for q in 13:
-			napis = napis + str(_eo[pole(q,i)]) + " "
+			napis = napis + ("%2d" % _eo[pole(q,i)])
 		print(napis)
+	print()
 
 func wolnePole(eo:Array, x:int,y:int):
 	if (eo[pole(x,y)]==0):
@@ -61,36 +62,31 @@ func wolnePole(eo:Array, x:int,y:int):
 	elif (eo[pole(x,y)]==4):
 		return 2
 	else:
-		return 0	
+		return 0
 
 func czyRuchLegalny(eo:Array, x1:int,y1:int,x2:int,y2:int):
 	#funkcja ta sprawdza, czy jest legalny ruch z pola (x1,y1) na (x2,y2). Jeśli tak, zwraca TRUE, jeżeli nie, FALSE
 	#nie sprawdzam, czy wartości należą do zakresu od 1 do 11, bo zakładam, że tylko takie będą podawane
-	if (x1==x2):#sprawdzenie dla ruchu w poziomie
-		if y1<y2:#sprawdzenie dla ruchu w prawo
+	if (x1==x2):#sprawdzenie dla ruchu w pionie
+		if y1<y2:#sprawdzenie dla ruchu w dół
 			for i in range(y2,y1,-1):
-				if (wolnePole(eo,x1,i)==0)||(wolnePole(eo,x1,i)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
-					print("OH1")
+				if !((wolnePole(eo,x1,i)==1) || ((wolnePole(eo,x1,i)==2) && ((eo[pole(x1,y1)]==3) || (eo[pole(x1,y1)]==7)))):
 					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
-		elif(y1>y2):#sprawdzenie dla ruchu w lewo
+		elif(y1>y2):#sprawdzenie dla ruchu w górę
 			for i in range(y2,y1,1):
-				if (wolnePole(eo,x1,i)==0)||(wolnePole(eo,x1,i)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
-					print("OH2")
+				if !((wolnePole(eo,x1,i)==1) || ((wolnePole(eo,x1,i)==2) && ((eo[pole(x1,y1)]==3) || (eo[pole(x1,y1)]==7)))):
 					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
 		else: return false	
-	elif (y1==y2):#sprawdzenie dla ruchu w pionie
-		if x1<x2:#sprawdzenie dla ruchu w dół
+	elif (y1==y2):#sprawdzenie dla ruchu w poziomie
+		if x1<x2:#sprawdzenie dla ruchu w prawo
 			for i in range(x2,x1,-1):
-				if (wolnePole(eo,i,y1)==0)||(wolnePole(eo,i,y1)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
-					print("OH3")
+				if !((wolnePole(eo,i,y1)==1) || ((wolnePole(eo,i,y1)==2) && ((eo[pole(x1,y1)]==3) || (eo[pole(x1,y1)]==7)))):
 					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
-		elif(x1>x2):#sprawdzenie dla ruchu w góre
+		elif(x1>x2):#sprawdzenie dla ruchu w lewo
 			for i in range(x2,x1,1):
-				if (wolnePole(eo,i,y1)==0)||(wolnePole(eo,i,y1)==2)&&((eo[pole(x1,y1)]==3)||(eo[pole(x1,y1)]==7)):
-					print("OH4")
+				if !((wolnePole(eo,i,y1)==1) || ((wolnePole(eo,i,y1)==2) && ((eo[pole(x1,y1)]==3) || (eo[pole(x1,y1)]==7)))):
 					return false#zwraca fałsz, jeżeli któreś pole po drodze nie jest wolne
-	else: 
-		print("Błąd współrzędnych")
+	else:
 		return false#zwraca fałsz, jeżeli x1!=x2 i y1!=y2, tzn jeżeli pola nie leżą w jednej kolumnie lub rzędzie
 	return true
 
@@ -112,7 +108,6 @@ func zbijanie(eo:Array, x:int, y: int, strzalka:int):
 					eo[pole(x,y)+kierunek]=0
 	#zbijanie przez mur tarcz
 	kierunek=strzalka
-	print(kierunek)
 	if(eo[pole(x,y)+kierunek]==-1):
 		if eo[pole(x,y)]==1:#czarne
 			if abs(kierunek)==1:#sprawdzanie dla pionowych krawędzi
@@ -236,9 +231,9 @@ func _ready():
 	ruch(plansza,4,6,4,8)
 	ruch(plansza,5,6,3,6)
 	ruch(plansza,6,6,4,6)
-	ruch(plansza,4,4,1,4)
-	plansza[pole(1,10)]=3
-	print(ruch(plansza,1,10,1,11))
+	#ruch(plansza,4,4,1,4)
+	#plansza[pole(1,10)]=3
+	#print(ruch(plansza,1,10,1,11))
 	pokazPlansze(plansza)
 
 
