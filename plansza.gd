@@ -52,7 +52,11 @@ func pokazPlansze(_eo:Array):
 	for i in 13:
 		napis = ""
 		for q in 13:
-			napis = napis + ("%2d" % _eo[pole(q,i)])
+			if (_eo[pole(q,i)]==0):
+				napis=napis+"  "
+			elif(_eo[pole(q,i)]==-1):
+				napis=napis+"XX"
+			else: napis = napis + ("%2d" % _eo[pole(q,i)])
 		print(napis)
 	print()
 
@@ -231,6 +235,7 @@ func _ready():
 	ruch(plansza,4,6,4,8)
 	ruch(plansza,5,6,3,6)
 	ruch(plansza,6,6,4,6)
+	ruch(plansza,6,2,11,2)
 	#ruch(plansza,4,4,1,4)
 	#plansza[pole(1,10)]=3
 	#print(ruch(plansza,1,10,1,11))
