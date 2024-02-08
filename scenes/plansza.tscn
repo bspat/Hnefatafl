@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtmch8v3ci8qy"]
+
+[ext_resource type="Script" path="res://scripts/plansza.gd" id="1_u8vv4"]
+
+[node name="Plansza" type="Node2D"]
+position = Vector2(576, 324)
+script = ExtResource("1_u8vv4")
